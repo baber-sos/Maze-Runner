@@ -14,9 +14,9 @@ def generate_maze(probability, GRIDSIZE):
     maze[GRIDSIZE[1]-1][GRIDSIZE[0]-1] = 0;
     return maze;
 
-#this will be a fringe of threee tuples
+#this will be a fringe of three tuples
 #(current_location, estimated_total_cost, actual_cost,  prev_location)
-#cost will be the negative of original coset since heapq is a min heap.
+#cost will be the negative of original cost since heapq is a min heap.
 
 def return_neighbors(coordinates, maze, GRIDSIZE):
     neighbors = [];
@@ -150,7 +150,7 @@ def plot_v2(maze, name, path, visited):
     for coord in visited:
         plt.plot( coord[1] + 0.5, GRIDSIZE[0] - coord[0] - 0.5, 'x', color='blue');
     for dir in path:
-     #   print 'cuurent dir: ', dir;
+     #   print 'current dir: ', dir;
         plt.plot( start[1] + 0.5, GRIDSIZE[0] - start[0] - 0.5, 'o', color='red');
         start[0] += directions[dir][0]; start[1] += directions[dir][1]; 
     plt.plot( start[1] + 0.5, GRIDSIZE[0] - start[0] - 0.5, 'o', color='red');
@@ -217,27 +217,27 @@ def copy_maze(maze, GRIDSIZE):
     return new_maze;
 #    for i in xrange(
 if __name__ == "__main__":
-    GRIDSIZE = (20, 20);
-    for p in [0.3]:
+    GRIDSIZE = (50, 50);
+    for p in [0.1]:
         maze = generate_maze(p, GRIDSIZE);
 #        operate_maze = maze[:][:];
         time_1 = time.time();
         cost, path, solved_maze = astar_man(copy_maze(maze, GRIDSIZE), GRIDSIZE);
         time_2 = time.time();
         plot(solved_maze, GRIDSIZE, 'astar_man.png');
-        print 'astar_man solved', len(path), time_2-time_1, 'probability: %0.1f' % p;
+        print 'A* (Manhattan) solved with path length:', len(path), '- Run time (sec):', time_2-time_1, '- p = %0.1f' % p;
         time_1 = time.time();
         cost, path, solved_maze_2 = astar(copy_maze(maze, GRIDSIZE), GRIDSIZE);
         time_2 = time.time();
-        print 'astar_euc solved', len(path), time_2-time_1, 'probability: %0.1f' % p;
+        print 'A* (Euclidean) solved with path length: ', len(path), '- Run time (sec):', time_2-time_1, '- p = %0.1f' % p;
         plot(solved_maze_2, GRIDSIZE, 'astar_euc.png');
         time_1 = time.time();
         explored_number, path, visited = solveBFS(maze);
         time_2 = time.time()
-        print 'bfs solved', len(path), time_2 - time_1, 'probability: %0.1f' % p;
+        print 'BFS solved with path length: ', len(path), '- Run time (sec):', time_2 - time_1, '- p = %0.1f' % p;
         plot_v2(maze, 'bfs.png', path, visited);
         time_1 = time.time();
         explored_number, path, visited = solveDFS(maze);
         time_2 = time.time();
-        print 'dfs solved', len(path), time_2 - time_1, 'probability: %0.1f' % p;
+        print 'DFS solved with path length: ', len(path), '- Run time (sec):', time_2 - time_1, '- p = %0.1f' % p;
         plot_v2(maze, 'dfs.png', path, visited);
