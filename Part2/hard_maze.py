@@ -31,7 +31,7 @@ def mutate_children(child, GRIDSIZE):
 
     return child;
 
-def find_hard_maze(maze_1, maze_2, GRIDSIZE, cost_1, cost_2, cost_type, algo_type):
+def find_hard_maze(maze_1, maze_2, GRIDSIZE, cost_1, cost_2, cost_type, algo_type, run):
     ##cost_type can have three values
     #0 is for explored_nodes
     #1 is for path length
@@ -114,11 +114,14 @@ def find_hard_maze(maze_1, maze_2, GRIDSIZE, cost_1, cost_2, cost_type, algo_typ
         _, path_1, visited_1, _ = solveDFS(cur_max_child);
     
     if algo_type <= 1:
-        plot(solved_child_1, GRIDSIZE, 'max_child_'+ str(algo_type) + '_' + str(cost_type) + '.png');
+        plot(solved_child_1, GRIDSIZE, 'max_child_'+ str(algo_type) + '_' + str(cost_type) + \
+            '_' + str(run) + '.png');
     else:
-        plot_v2(cur_max_child, 'max_child_'+ str(algo_type) + '_' + str(cost_type) + '.png', path_1, visited_1);
+        plot_v2(cur_max_child, 'max_child_'+ str(algo_type) + '_' + str(cost_type) + \
+            '_' + str(run) + '.png', path_1, visited_1);
     #plot(solved_child_2, GRIDSIZE, 'child_2.png');
-    print 'Max Cost Child: ', cur_max_cost, ' for algo type: ', algo_type, ' and cost type: ', cost_type;
+    print 'Max Cost Child: ', cur_max_cost, ' for algo type: ', algo_type, ' and cost type: ', cost_type, \
+        'for run: ', run;
     ####bfs and dfs plotting and testing code
     ##bfs
     #_, path_1, visited_1, _ = solveBFS(child_1);
@@ -156,31 +159,31 @@ if __name__ == '__main__':
     ##2 is for bfs
     ##3 is for dfs
     for algo_type in xrange(4):
+        if algo_type == 0:
+            all_costs_1[0], all_costs_1[1], solved_1, all_costs_1[2] = astar(copy_maze(maze_1, GRIDSIZE), GRIDSIZE);
+            all_costs_2[0], all_costs_2[1], solved_2, all_costs_2[2] = astar(copy_maze(maze_2, GRIDSIZE), GRIDSIZE);
+        elif algo_type == 1:
+            all_costs_1[0], all_costs_1[1], solved_1, all_costs_1[2] = astar_man(copy_maze(maze_1, GRIDSIZE), GRIDSIZE);
+            all_costs_2[0], all_costs_2[1], solved_2, all_costs_2[2] = astar_man(copy_maze(maze_2, GRIDSIZE), GRIDSIZE);
+        elif algo_type == 2:
+            all_costs_1[0], all_costs_1[1], visited_1, all_costs_1[2] = solveBFS(maze_1);
+            all_costs_2[0], all_costs_2[1], visited_2, all_costs_2[2] = solveBFS(maze_2);
+        elif algo_type == 3:
+            all_costs_1[0], all_costs_1[1], visited_1, all_costs_1[2] = solveDFS(maze_1);
+            all_costs_2[0], all_costs_2[1], visited_2, all_costs_2[2] = solveDFS(maze_2);
+        
+        if algo_type <= 1:
+            plot(solved_1, GRIDSIZE, 'parent1_' + str(algo_type) + '.png');
+            plot(solved_2, GRIDSIZE, 'parent2_' + str(algo_type) + '.png');
+        else:
+            plot_v2(maze_1, 'parent1_' + str(algo_type) + '.png', all_costs_1[1], visited_1);
+            plot_v2(maze_2, 'parent2_' + str(algo_type) + '.png', all_costs_2[1], visited_2);
+        
+        all_costs_1[1] = len(all_costs_1[1]);
+        all_costs_2[1] = len(all_costs_2[1]);
         for cost_type in xrange(3):
-            if algo_type == 0:
-                all_costs_1[0], all_costs_1[1], solved_1, all_costs_1[2] = astar(copy_maze(maze_1, GRIDSIZE), GRIDSIZE);
-                all_costs_2[0], all_costs_2[1], solved_2, all_costs_2[2] = astar(copy_maze(maze_2, GRIDSIZE), GRIDSIZE);
-            elif algo_type == 1:
-                all_costs_1[0], all_costs_1[1], solved_1, all_costs_1[2] = astar_man(copy_maze(maze_1, GRIDSIZE), GRIDSIZE);
-                all_costs_2[0], all_costs_2[1], solved_2, all_costs_2[2] = astar_man(copy_maze(maze_2, GRIDSIZE), GRIDSIZE);
-            elif algo_type == 2:
-                all_costs_1[0], all_costs_1[1], visited_1, all_costs_1[2] = solveBFS(maze_1);
-                all_costs_2[0], all_costs_2[1], visited_2, all_costs_2[2] = solveBFS(maze_2);
-            elif algo_type == 3:
-                all_costs_1[0], all_costs_1[1], visited_1, all_costs_1[2] = solveDFS(maze_1);
-                all_costs_2[0], all_costs_2[1], visited_2, all_costs_2[2] = solveDFS(maze_2);
-            
-            if algo_type <= 1:
-                plot(solved_1, GRIDSIZE, 'parent1_' + str(algo_type) + '.png');
-                plot(solved_2, GRIDSIZE, 'parent2_' + str(algo_type) + '.png');
-            else:
-                plot_v2(maze_1, 'parent1_' + str(algo_type) + '.png', all_costs_1[1], visited_1);
-                plot_v2(maze_2, 'parent2_' + str(algo_type) + '.png', all_costs_2[1], visited_2);
-            
-            all_costs_1[1] = len(all_costs_1[1]);
-            all_costs_2[1] = len(all_costs_2[1]);
-            print 'Parent\'s Max Cost: ', max(all_costs_1[cost_type], all_costs_2[cost_type]), ' for algo type: ', algo_type, \
-                    ' cost type: ', cost_type;
-
-            find_hard_maze(maze_1, maze_2, GRIDSIZE, all_costs_1[cost_type], all_costs_2[cost_type], cost_type, algo_type);
+            for run in xrange(3):
+                print 'Parent\'s Max Cost: ', max(all_costs_1[cost_type], all_costs_2[cost_type]), ' for algo type: ', algo_type, \
+                        ' cost type: ', cost_type;
+                find_hard_maze(maze_1, maze_2, GRIDSIZE, all_costs_1[cost_type], all_costs_2[cost_type], cost_type, algo_type, run);
     
